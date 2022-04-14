@@ -10,8 +10,10 @@ variable "instance_type" {
 
 variable "subnet_id" {
   type = string
+  sensitive = true
 }
 
 variable "vpc_id" {
   type = string
+  sensitive = true
 }
