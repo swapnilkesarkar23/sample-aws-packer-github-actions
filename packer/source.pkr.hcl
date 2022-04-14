@@ -14,3 +14,4 @@ source "amazon-ebs" "amazon-linux" {
   tags = {
     Name = "packer-linux-aws"
   }
+}
