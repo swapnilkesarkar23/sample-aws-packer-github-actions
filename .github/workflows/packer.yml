@@ -1,8 +1,11 @@
-# This is a basic workflow to help you get started with Actions
+name: Build AMI using Packer
 
-name: CI
+env:
+  PACKER_BUILD_ARGS: -timestamp-ui -on-error=cleanup
+  PACKER_TEMPLATE_DIR: ./packer
+  AWS_DEFAULT_REGION: eu-west-1
+  BUILD_DEPENDENCIES: packer
 
-# Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -13,24 +16,41 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  validate-packer:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: validate packer
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Update & Install build dependencies
+        run: sudo apt update && sudo apt install ${{ env.BUILD_DEPENDENCIES }}
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: validate template 
+        run: packer validate ${{ env.PACKER_TEMPLATE_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          vpc_id: ${{ secrets.AWS_VPC_ID }}
+          subnet_id: ${{ secrets.AWS_SUBNET_ID }}
+
+  build-ami:
+    runs-on: ubuntu-latest
+    name: build AMI
+    needs: validate-packer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Update & Install build dependencies
+        run: sudo apt update && sudo apt install ${{ env.BUILD_DEPENDENCIES }}
+
+      - name: Build AMI
+        run: packer build ${{ env.PACKER_BUILD_ARGS }} ${{ env.PACKER_TEMPLATE_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          vpc_id: ${{ secrets.AWS_VPC_ID }}
+          subnet_id: ${{ secrets.AWS_SUBNET_ID }}
+
