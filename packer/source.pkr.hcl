@@ -1,6 +1,6 @@
 source "amazon-ebs" "amazon-linux" {
   ami_description           = "Linux AMI created using Packer"
-  ami_name                  = "packer-linux-aws"
+  ami_name                  = "packer-linux-{{timestamp}}"
   communicator              = "ssh"
   iam_instance_profile      = "packer-profile"
   instance_type             = var.instance_type
