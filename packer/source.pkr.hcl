@@ -12,6 +12,6 @@ source "amazon-ebs" "amazon-linux" {
   subnet_id                 = var.subnet_id
   vpc_id                    = var.vpc_id
   tags = {
-    Name = "packer-linux-aws"
+    Name = "packer-linux-{{timestamp}}"
   }
 }
