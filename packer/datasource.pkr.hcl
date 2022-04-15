@@ -1,6 +1,6 @@
 data "amazon-ami" "linux" {
   filters = {
-    name                = "amzn2*"
+    name                = "amzn2-ami-kernel-*"
     architecture        = "x86_64"
     root-device-type    = "ebs"
     virtualization-type = "hvm"
