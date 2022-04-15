@@ -21,35 +21,44 @@ jobs:
   terraform-fmt:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@master
-      - name: Terraform Format
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up terraform action
         uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Format
         run: terraform fmt -check
         continue-on-error: false
 
   terraform-validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@master
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up terraform action
+        uses: hashicorp/setup-terraform@v1
+
       - name: Terraform Init
-        uses: hashicorp/setup-terraform@v1
         run: terraform init
+
       - name: Terraform Validate
-        uses: hashicorp/setup-terraform@v1
         run: terraform validate -no-color
 
   terraform-plan:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@master
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up terraform action
+        uses: hashicorp/setup-terraform@v1
+
       - name: Terraform Init
-        uses: hashicorp/setup-terraform@v1
         run: terraform init
+
       - name: Terraform Plan
-        uses: hashicorp/setup-terraform@v1
         run: terraform plan -no-color
         continue-on-error: false
         env:
@@ -59,13 +68,16 @@ jobs:
   terraform-apply:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@master
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up terraform action
+        uses: hashicorp/setup-terraform@v1
+
       - name: Terraform Init
-        uses: hashicorp/setup-terraform@v1
         run: terraform init
+
       - name: Terraform Apply
-        uses: hashicorp/setup-terraform@v1
         run: terraform apply --auto-approve
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
