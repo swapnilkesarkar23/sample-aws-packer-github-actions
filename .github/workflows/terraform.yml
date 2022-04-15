@@ -19,6 +19,7 @@ on:
 jobs:
   terraform-fmt:
     runs-on: ubuntu-latest
+    name: terraform format
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -32,6 +33,8 @@ jobs:
 
   terraform-validate:
     runs-on: ubuntu-latest
+    name: terraform validate
+    needs: terraform-fmt
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -47,6 +50,8 @@ jobs:
 
   terraform-plan:
     runs-on: ubuntu-latest
+    name: terraform plan
+    needs: terraform-validate
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -66,6 +71,8 @@ jobs:
 
   terraform-apply:
     runs-on: ubuntu-latest
+    name: terraform apply
+    needs: terraform-plan
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
