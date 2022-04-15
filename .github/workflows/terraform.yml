@@ -1,0 +1,72 @@
+---
+name: Terraform
+
+env:
+  TERRAFORM_WORKING_DIR: ./terraform
+  AWS_DEFAULT_REGION: eu-west-1
+
+defaults:
+  run:
+    working-directory: ${{ env.TERRAFORM_WORKING_DIR }}
+
+on:
+  # Triggers the workflow on push events but only for the main branch
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Terraform Format
+        uses: hashicorp/setup-terraform@v1
+        run: terraform fmt -check
+        continue-on-error: false
+
+  terraform-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Terraform Init
+        uses: hashicorp/setup-terraform@v1
+        run: terraform init
+      - name: Terraform Validate
+        uses: hashicorp/setup-terraform@v1
+        run: terraform validate -no-color
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Terraform Init
+        uses: hashicorp/setup-terraform@v1
+        run: terraform init
+      - name: Terraform Plan
+        uses: hashicorp/setup-terraform@v1
+        run: terraform plan -no-color
+        continue-on-error: false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Terraform Init
+        uses: hashicorp/setup-terraform@v1
+        run: terraform init
+      - name: Terraform Apply
+        uses: hashicorp/setup-terraform@v1
+        run: terraform apply --auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
